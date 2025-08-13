@@ -13,9 +13,9 @@
 
 ```js
 export default tseslint.config([
-  globalIgnores(["dist"]),
+  globalIgnores(['dist']),
   {
-    files: ["**/*.{ts,tsx}"],
+    files: ['**/*.{ts,tsx}'],
     extends: [
       // 其他配置...
 
@@ -24,18 +24,18 @@ export default tseslint.config([
       // 或者，使用以下内容以获得更严格的规则
       ...tseslint.configs.strictTypeChecked,
       // 或者，添加以下内容以获得样式规则
-      ...tseslint.configs.stylisticTypeChecked,
+      ...tseslint.configs.stylisticTypeChecked
 
       // 其他配置...
     ],
     languageOptions: {
       parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname
+      }
       // 其他选项...
-    },
-  },
+    }
+  }
 ]);
 ```
 
@@ -43,27 +43,27 @@ export default tseslint.config([
 
 ```js
 // eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
+import reactX from 'eslint-plugin-react-x';
+import reactDom from 'eslint-plugin-react-dom';
 
 export default tseslint.config([
-  globalIgnores(["dist"]),
+  globalIgnores(['dist']),
   {
-    files: ["**/*.{ts,tsx}"],
+    files: ['**/*.{ts,tsx}'],
     extends: [
       // 其他配置...
       // 启用 React 的 lint 规则
-      reactX.configs["recommended-typescript"],
+      reactX.configs['recommended-typescript'],
       // 启用 React DOM 的 lint 规则
-      reactDom.configs.recommended,
+      reactDom.configs.recommended
     ],
     languageOptions: {
       parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname
+      }
       // 其他选项...
-    },
-  },
+    }
+  }
 ]);
 ```
