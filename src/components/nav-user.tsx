@@ -33,14 +33,18 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { useState } from 'react';
-import { formatPhone } from '@/lib/utils';
-import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
+import { formatPhone } from '@/lib/utils';
+
+import { Switch } from '@/components/ui/switch';
 import { useTheme } from './theme-provider';
 
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
 export default function NavUser() {
-  const [language, setLanguage] = useState('system');
+  const { t, i18n } = useTranslation();
+  const [language, setLanguage] = useState(i18n.language);
   const { theme, setTheme } = useTheme();
 
   const user: {
@@ -51,6 +55,14 @@ export default function NavUser() {
     name: 'maike',
     email: 'maike@example.com',
     avatar: 'https://github.com/shadcn.png'
+  };
+
+  const handleLanguageChange = (lang: string) => {
+    setLanguage(lang);
+    if (lang === 'system') {
+      lang = navigator.language || 'zh-CN';
+    }
+    i18n.changeLanguage(lang);
   };
 
   return (
@@ -97,12 +109,12 @@ export default function NavUser() {
                 <DialogTrigger asChild>
                   <DropdownMenuItem>
                     <Settings />
-                    系统设置
+                    {t('systemSetting')}
                   </DropdownMenuItem>
                 </DialogTrigger>
                 <DropdownMenuItem>
                   <LogOut />
-                  退出登陆
+                  {t('logout')}
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
@@ -111,41 +123,41 @@ export default function NavUser() {
       </SidebarMenu>
       <DialogContent className='sm:max-w-xl'>
         <DialogHeader>
-          <DialogTitle>系统设置</DialogTitle>
+          <DialogTitle>{t('systemSetting')}</DialogTitle>
         </DialogHeader>
         <Tabs defaultValue='setting'>
           <TabsList className='w-full'>
-            <TabsTrigger value='setting'>通用设置</TabsTrigger>
-            <TabsTrigger value='account'>账号管理</TabsTrigger>
-            <TabsTrigger value='agreement'>服务协议</TabsTrigger>
+            <TabsTrigger value='setting'>{t('generalSetting')}</TabsTrigger>
+            <TabsTrigger value='account'>{t('accountManagement')}</TabsTrigger>
+            <TabsTrigger value='agreement'>{t('serviceAgreement')}</TabsTrigger>
           </TabsList>
           <TabsContent value='setting'>
             <Cell
-              title='语言'
+              title={t('language')}
               description={
-                <Select value={language} onValueChange={setLanguage}>
+                <Select value={language} onValueChange={handleLanguageChange}>
                   <SelectTrigger className='w-27'>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value='english'>English</SelectItem>
-                    <SelectItem value='chinese'>中文</SelectItem>
+                    <SelectItem value='en-US'>English</SelectItem>
+                    <SelectItem value='zh-CN'>中文</SelectItem>
                     <SelectItem value='system'>跟随系统</SelectItem>
                   </SelectContent>
                 </Select>
               }
             />
             <Cell
-              title='主题'
+              title={t('theme')}
               description={
                 <Select value={theme} onValueChange={setTheme}>
                   <SelectTrigger className='w-27'>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value='light'>浅色</SelectItem>
-                    <SelectItem value='dark'>深色</SelectItem>
-                    <SelectItem value='system'>跟随系统</SelectItem>
+                    <SelectItem value='light'>{t('浅色')}</SelectItem>
+                    <SelectItem value='dark'>{t('深色')}</SelectItem>
+                    <SelectItem value='system'>{t('跟随系统')}</SelectItem>
                   </SelectContent>
                 </Select>
               }
@@ -153,40 +165,47 @@ export default function NavUser() {
             />
           </TabsContent>
           <TabsContent value='account'>
-            <Cell title='手机号码' description={formatPhone('17671812132')} />
             <Cell
-              title='数据用于优化体验'
-              subTitle='允许我们将你的对话内容用于优化 DeepSeek 的使用体验。我们保障你的数据隐私安全。'
+              title={t('phoneNumber')}
+              description={formatPhone('17671812132')}
+            />
+            <Cell
+              title={t('dataUsage')}
+              subTitle={t('dataUsageDescription')}
               description={<Switch />}
             />
             <Cell
-              title='导出所有历史对话'
-              subTitle='导出内容中将包含你的账号信息和所有历史对话。导出可能需要一段时间，下载链接的有效期为 7 天。'
-              description={<Button variant='outline'>导出</Button>}
+              title={t('exportHistory')}
+              subTitle={t('exportHistoryDescription')}
+              description={<Button variant='outline'>{t('export')}</Button>}
             />
             <Cell
-              title='登出所有设备'
-              description={<Button variant='outline'>登出</Button>}
+              title={t('logoutAllDevices')}
+              description={
+                <Button variant='outline'>{t('logoutAction')}</Button>
+              }
             />
             <Cell
-              title='删除所有对话'
-              description={<Button variant='destructive'>删除</Button>}
+              title={t('deleteAllChats')}
+              description={<Button variant='destructive'>{t('delete')}</Button>}
             />
             <Cell
-              title='注销账号'
+              title={t('deleteAccount')}
               isLast
-              description={<Button variant='destructive'>注销</Button>}
+              description={
+                <Button variant='destructive'>{t('cancelAccount')}</Button>
+              }
             />
           </TabsContent>
           <TabsContent value='agreement'>
             <Cell
-              title='用户协议'
-              description={<Button variant='outline'>查看</Button>}
+              title={t('userAgreement')}
+              description={<Button variant='outline'>{t('view')}</Button>}
             />
             <Cell
-              title='隐私政策'
+              title={t('privacyPolicy')}
               isLast
-              description={<Button variant='outline'>查看</Button>}
+              description={<Button variant='outline'>{t('view')}</Button>}
             />
           </TabsContent>
         </Tabs>

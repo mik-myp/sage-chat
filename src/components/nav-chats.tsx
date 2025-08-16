@@ -15,6 +15,7 @@ import {
   SidebarMenuItem,
   useSidebar
 } from '@/components/ui/sidebar';
+import { useTranslation } from 'react-i18next';
 
 export default function NavChats() {
   const chats: {
@@ -184,10 +185,11 @@ export default function NavChats() {
   ];
 
   const { isMobile } = useSidebar();
+  const { t } = useTranslation();
 
   return (
     <SidebarGroup className='group-data-[collapsible=icon]:hidden'>
-      <SidebarGroupLabel>聊天</SidebarGroupLabel>
+      <SidebarGroupLabel>{t('chat')}</SidebarGroupLabel>
       <SidebarMenu>
         {chats.map((item) => (
           <SidebarMenuItem key={item.name}>
@@ -200,7 +202,7 @@ export default function NavChats() {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuAction showOnHover>
                   <MoreHorizontal className='cursor-pointer' />
-                  <span className='sr-only'>更多</span>
+                  <span className='sr-only'>{t('more')}</span>
                 </SidebarMenuAction>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -210,15 +212,15 @@ export default function NavChats() {
               >
                 <DropdownMenuItem>
                   <Pencil className='text-muted-foreground' />
-                  <span>编辑</span>
+                  <span>{t('edit')}</span>
                 </DropdownMenuItem>
                 {/* <DropdownMenuItem>
                   <Share className='text-muted-foreground' />
-                  <span>分享</span>
+                  <span>{t('share')}</span>
                 </DropdownMenuItem> */}
                 <DropdownMenuItem>
                   <Trash2 className='text-red-500' />
-                  <span className='text-red-500'>删除</span>
+                  <span className='text-red-500'>{t('delete')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
