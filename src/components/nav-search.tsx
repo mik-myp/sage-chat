@@ -1,22 +1,12 @@
 import { useState } from 'react';
-import {
-  Calculator,
-  Calendar,
-  CreditCard,
-  Settings,
-  Smile,
-  User,
-  Search
-} from 'lucide-react';
+import { Search } from 'lucide-react';
 import {
   CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandList,
-  CommandSeparator,
-  CommandShortcut
+  CommandList
 } from '@/components/ui/command';
 import { chats } from '@/lib/chats';
 import { NavLink } from 'react-router-dom';

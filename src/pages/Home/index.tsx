@@ -1,7 +1,6 @@
 import { AppSidebar } from '@/components/app-sidebar';
 import {
   SidebarInset,
-  SidebarProvider,
   SidebarTrigger,
   useSidebar
 } from '@/components/ui/sidebar';
