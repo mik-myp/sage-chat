@@ -11,15 +11,17 @@ import {
   TooltipContent,
   TooltipTrigger
 } from '@/components/ui/tooltip';
+import { useIsMobile } from '@/hooks/use-mobile';
 export default function Home() {
   const { state } = useSidebar();
+  const isMobile = useIsMobile();
 
   return (
     <ThemeProvider defaultTheme='system' storageKey='sage-chat-theme'>
       <AppSidebar />
       <SidebarInset>
         <header className='flex h-13 shrink-0 items-center gap-2 border-b border-gray-200 border-solid'>
-          {state === 'collapsed' && (
+          {(state === 'collapsed' || isMobile) && (
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className='flex items-center gap-2 px-4'>
