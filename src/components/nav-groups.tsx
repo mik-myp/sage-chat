@@ -27,7 +27,6 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -37,11 +36,13 @@ import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { useTranslation } from 'react-i18next';
+import { NavLink } from 'react-router-dom';
+import { GROUPS_BASE_URL } from '../lib/utils';
 
 interface Group {
-  name?: string;
-  url?: string;
-  icon?: LucideIcon;
+  name: string;
+  icon: LucideIcon;
+  id: string;
 }
 
 const TitleMap = {
@@ -60,8 +61,8 @@ export default function NavGroups() {
   const groups: Group[] = [
     {
       name: '分组示例',
-      url: '#',
-      icon: FolderClosed
+      icon: FolderClosed,
+      id: 'P1IunFSA3HZo24Vi'
     }
   ];
 
@@ -71,7 +72,7 @@ export default function NavGroups() {
   const [dialogType, setDialogType] = useState<'add' | 'edit' | 'delete'>(
     'add'
   );
-  const [actionData, setActionData] = useState<Group>({});
+  const [actionData, setActionData] = useState<Group>({} as Group);
 
   return (
     <Dialog>
@@ -82,7 +83,7 @@ export default function NavGroups() {
             asChild
             onClick={() => {
               setDialogType('add');
-              setActionData({});
+              setActionData({} as Group);
             }}
           >
             <Plus className='cursor-pointer' />
@@ -92,10 +93,10 @@ export default function NavGroups() {
           {groups.map((item) => (
             <SidebarMenuItem key={item.name}>
               <SidebarMenuButton asChild>
-                <a href={item.url}>
+                <NavLink to={`${GROUPS_BASE_URL}/${item.id}`}>
                   {item.icon && <item.icon />}
                   <span>{item.name}</span>
-                </a>
+                </NavLink>
               </SidebarMenuButton>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

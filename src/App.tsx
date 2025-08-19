@@ -1,29 +1,13 @@
-import { AppSidebar } from '@/components/app-sidebar';
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger
-} from '@/components/ui/sidebar';
-import { ThemeProvider } from '@/components/theme-provider';
+import { RouterProvider } from 'react-router-dom';
+import router from './router';
+import { SidebarProvider } from './components/ui/sidebar';
 
-export default function Page() {
+function App() {
   return (
-    <ThemeProvider defaultTheme='system' storageKey='sage-chat-theme'>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-          <header className='flex h-13 shrink-0 items-center gap-2 border-b border-gray-200 border-solid'>
-            <div className='flex items-center gap-2 px-4'>
-              <SidebarTrigger className='-ml-1' />
-            </div>
-          </header>
-          <div className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-            <div className='bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min'>
-              123
-            </div>
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
-    </ThemeProvider>
+    <SidebarProvider>
+      <RouterProvider router={router} />
+    </SidebarProvider>
   );
 }
+
+export default App;

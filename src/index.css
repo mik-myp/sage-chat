@@ -1,6 +1,19 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+body {
+  pointer-events: auto !important;
+}
+html,
+body,
+#root {
+  @apply h-full;
+}
+
+a.active {
+  @apply bg-[#0000001a];
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

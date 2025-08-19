@@ -15,3 +15,7 @@ export function getSystemLanguage(): string {
   const language = navigator.language || 'zh';
   return language.split('-')[0]; // Return the language code (e.g., 'en', 'zh')
 }
+
+export const CHATS_BASE_URL = '/chats';
+
+export const GROUPS_BASE_URL = '/groups';

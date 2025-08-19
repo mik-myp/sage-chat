@@ -8,6 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar';
+import { NavLink } from 'react-router-dom';
 
 export default function NavMain() {
   const items: {
@@ -17,12 +18,12 @@ export default function NavMain() {
   }[] = [
     {
       title: '全部应用',
-      url: '#',
+      url: '/list',
       icon: Grid2x2Plus
     },
     {
       title: '全部收藏',
-      url: '#',
+      url: '/favorites',
       icon: BookmarkCheck
     }
   ];
@@ -33,10 +34,10 @@ export default function NavMain() {
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton asChild tooltip={item.title}>
-              <a href={item.url}>
+              <NavLink to={item.url}>
                 <item.icon />
                 <span>{item.title}</span>
-              </a>
+              </NavLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}
