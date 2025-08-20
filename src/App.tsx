@@ -1,12 +1,13 @@
 import { RouterProvider } from 'react-router-dom';
 import router from './router';
-import { SidebarProvider } from './components/ui/sidebar';
+import { Toaster } from '@/components/ui/sonner';
 
 function App() {
   return (
-    <SidebarProvider>
+    <>
+      <Toaster position='top-center' richColors />
       <RouterProvider router={router} />
-    </SidebarProvider>
+    </>
   );
 }
 

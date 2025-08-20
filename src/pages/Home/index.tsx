@@ -2,14 +2,31 @@ import { AppSidebar } from '@/components/app-sidebar';
 import {
   SidebarInset,
   SidebarTrigger,
-  useSidebar
+  useSidebar,
+  SidebarProvider
 } from '@/components/ui/sidebar';
 import { ThemeProvider } from '@/components/theme-provider';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useEffect } from 'react';
-export default function Home() {
+import request from '@/utils/request';
+import { useUserStore } from '../../store';
+
+export default function HomeWrapper() {
+  const { isLoggedIn } = useUserStore();
+
+  if (!isLoggedIn) {
+    return <Navigate to='/login' />;
+  }
+
+  return (
+    <SidebarProvider>
+      <Home />
+    </SidebarProvider>
+  );
+}
+function Home() {
   const { state, setOpenMobile } = useSidebar();
   const isMobile = useIsMobile();
 
@@ -19,6 +36,12 @@ export default function Home() {
   useEffect(() => {
     if (isMobile) setOpenMobile(false);
   }, [location, isMobile, setOpenMobile]);
+
+  useEffect(() => {
+    request('/reminders').then((res) => {
+      console.log(res);
+    });
+  }, []);
 
   return (
     <ThemeProvider defaultTheme='system' storageKey='sage-chat-theme'>

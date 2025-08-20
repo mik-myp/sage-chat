@@ -7,11 +7,17 @@ import Page403 from '@/pages/Page403/index.tsx';
 import Page404 from '@/pages/Page404/index.tsx';
 import Groups from '@/pages/Groups';
 import Chats from '@/pages/Chats';
+import Login from '@/pages/Login';
 
 const routes: RouteObject[] = [
   {
     path: '/',
     element: createElement(Home),
+    loader: () => {
+      return {
+        title: '首页'
+      };
+    },
     children: [
       {
         path: '/list',
@@ -30,6 +36,10 @@ const routes: RouteObject[] = [
         element: createElement(Chats)
       }
     ]
+  },
+  {
+    path: '/login',
+    element: createElement(Login)
   },
   {
     path: '*',
