@@ -5,16 +5,20 @@ import {
   useSidebar
 } from '@/components/ui/sidebar';
 import { ThemeProvider } from '@/components/theme-provider';
-import { Outlet } from 'react-router-dom';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger
-} from '@/components/ui/tooltip';
+import { Outlet, useLocation } from 'react-router-dom';
+
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useEffect } from 'react';
 export default function Home() {
-  const { state } = useSidebar();
+  const { state, setOpenMobile } = useSidebar();
   const isMobile = useIsMobile();
+
+  const location = useLocation();
+
+  // 手机端修改路由时关闭侧边栏
+  useEffect(() => {
+    if (isMobile) setOpenMobile(false);
+  }, [location, isMobile, setOpenMobile]);
 
   return (
     <ThemeProvider defaultTheme='system' storageKey='sage-chat-theme'>
@@ -22,14 +26,9 @@ export default function Home() {
       <SidebarInset>
         <header className='flex h-13 shrink-0 items-center gap-2 border-b border-gray-200 border-solid'>
           {(state === 'collapsed' || isMobile) && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className='flex items-center gap-2 px-4'>
-                  <SidebarTrigger className='-ml-1' />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>展开侧栏</TooltipContent>
-            </Tooltip>
+            <div className='flex items-center gap-2 px-4'>
+              <SidebarTrigger className='-ml-1' />
+            </div>
           )}
         </header>
         <div className='flex flex-1 flex-col gap-4 p-4 pt-0'>
