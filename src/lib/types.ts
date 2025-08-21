@@ -11,14 +11,14 @@ export interface ApiResponse<T> {
 /**
  * 从 axios 库导入的类型
  */
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
-
-export type {
+import type {
   AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
   AxiosError
-};
+} from 'axios';
+
+export type { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError };
 
 /**
  * 请求配置选项，扩展自 AxiosRequestConfig

@@ -10,7 +10,6 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useEffect } from 'react';
-import request from '@/utils/request';
 import { useUserStore } from '../../store';
 
 export default function HomeWrapper() {
@@ -36,12 +35,6 @@ function Home() {
   useEffect(() => {
     if (isMobile) setOpenMobile(false);
   }, [location, isMobile, setOpenMobile]);
-
-  useEffect(() => {
-    request('/reminders').then((res) => {
-      console.log(res);
-    });
-  }, []);
 
   return (
     <ThemeProvider defaultTheme='system' storageKey='sage-chat-theme'>

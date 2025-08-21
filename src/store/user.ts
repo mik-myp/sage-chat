@@ -1,4 +1,5 @@
 import { createStore } from './createStore';
+import { clearPersistAndRedirect } from '../lib/clearPersistStore';
 
 /**
  * 用户信息接口
@@ -29,63 +30,48 @@ export interface UserState {
 /**
  * 用户状态store
  */
-export const useUserStore = createStore<UserState>((set, get) => ({
-  // 初始状态
-  userInfo: null,
-  isLoggedIn: false,
+export const useUserStore = createStore<UserState>(
+  (set, get) => ({
+    // 初始状态
+    userInfo: null,
+    isLoggedIn: false,
 
-  // 设置用户信息
-  setUserInfo: (userInfo: UserInfo | null) => {
-    set({
-      userInfo,
-      isLoggedIn: !!userInfo
-    });
+    // 设置用户信息
+    setUserInfo: (userInfo: UserInfo | null) => {
+      set({
+        userInfo,
+        isLoggedIn: !!userInfo
+      });
+    },
 
-    // 保存到本地存储
-    if (userInfo) {
-      localStorage.setItem('userInfo', JSON.stringify(userInfo));
-    } else {
-      localStorage.removeItem('userInfo');
+    // 登录
+    login: (userInfo: UserInfo) => {
+      set({
+        userInfo,
+        isLoggedIn: true
+      });
+    },
+
+    // 登出
+    logout: () => {
+      set({
+        userInfo: null,
+        isLoggedIn: false
+      });
+      // 使用专用工具函数清除所有Zustand持久化存储并重定向到登录页
+      clearPersistAndRedirect({
+        refresh: true
+      });
+    },
+
+    // 更新用户信息
+    updateUserInfo: (partialUserInfo: Partial<UserInfo>) => {
+      const currentUserInfo = get().userInfo;
+      if (currentUserInfo) {
+        const updatedUserInfo = { ...currentUserInfo, ...partialUserInfo };
+        set({ userInfo: updatedUserInfo });
+      }
     }
-  },
-
-  // 登录
-  login: (userInfo: UserInfo) => {
-    set({
-      userInfo,
-      isLoggedIn: true
-    });
-    localStorage.setItem('userInfo', JSON.stringify(userInfo));
-  },
-
-  // 登出
-  logout: () => {
-    set({
-      userInfo: null,
-      isLoggedIn: false
-    });
-    localStorage.removeItem('userInfo');
-    localStorage.removeItem('token');
-  },
-
-  // 更新用户信息
-  updateUserInfo: (partialUserInfo: Partial<UserInfo>) => {
-    const currentUserInfo = get().userInfo;
-    if (currentUserInfo) {
-      const updatedUserInfo = { ...currentUserInfo, ...partialUserInfo };
-      set({ userInfo: updatedUserInfo });
-      localStorage.setItem('userInfo', JSON.stringify(updatedUserInfo));
-    }
-  }
-}));
-
-// 初始化时从本地存储加载用户信息
-try {
-  const savedUserInfo = localStorage.getItem('userInfo');
-  if (savedUserInfo) {
-    const userInfo = JSON.parse(savedUserInfo);
-    useUserStore.getState().setUserInfo(userInfo);
-  }
-} catch (error) {
-  console.error('Failed to load user info from localStorage:', error);
-}
+  }),
+  'user'
+);
