@@ -239,14 +239,14 @@ export default function NavGroups() {
             )}
             {dialogType === 'add' && (
               <div className='my-3 flex flex-col gap-2 text-sm'>
-                <div className='text-[#00000099]'>什么是分组？</div>
-                <div className='text-[#00000066]'>
+                <div className='text-(--muted-foreground)'>什么是分组？</div>
+                <div className='text-(--muted-foreground)'>
                   分组功能支持对话分类管理，并通过专属指令定制回复，使交流更专注，个性化且持续发展
                 </div>
               </div>
             )}
             {dialogType === 'delete' && (
-              <div className='text-sm text-[#00000099]'>
+              <div className='text-sm text-(--muted-foreground)'>
                 该分组被删除后无法恢复，组内的所有对话与指令也将被一并删除，不可恢复。确认删除吗？
               </div>
             )}

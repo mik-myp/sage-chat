@@ -17,7 +17,7 @@ const NavSearch = () => {
     <>
       <div
         onClick={() => setOpen(true)}
-        className='flex items-center gap-2 mx-2 py-1.5 px-2 cursor-pointer rounded-lg border-[0.5px] border-solid border-[#00000014] bg-[#0000000d] hover:bg-[#00000014] text-[#00000066] text-sm'
+        className='flex items-center gap-2 mx-2 py-1.5 px-2 cursor-pointer rounded-lg border-[0.5px] border-solid border-border bg-muted hover:bg-accent text-muted-foreground text-sm'
       >
         <Search size={20} />
         <span>搜索</span>

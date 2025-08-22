@@ -1,41 +1,61 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { changeTheme, type Theme } from '../lib/theme';
 
-type Theme = 'dark' | 'light' | 'system';
+type ThemeMode = 'dark' | 'light' | 'system';
 
 type ThemeProviderProps = {
   children: React.ReactNode;
-  defaultTheme?: Theme;
+  defaultThemes?: {
+    theme?: keyof typeof Theme;
+    themeMode?: ThemeMode;
+  };
   storageKey?: string;
 };
 
 type ThemeProviderState = {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
+  themes: {
+    theme?: keyof typeof Theme;
+    themeMode?: ThemeMode;
+  };
+  setThemes: (themes: ThemeProviderState['themes']) => void;
 };
 
 const initialState: ThemeProviderState = {
-  theme: 'system',
-  setTheme: () => null
+  themes: {
+    theme: 'Default',
+    themeMode: 'system'
+  },
+  setThemes: () => null
 };
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
 export function ThemeProvider({
   children,
-  defaultTheme = 'system',
+  defaultThemes = {
+    theme: 'Default',
+    themeMode: 'system'
+  },
   storageKey = 'vite-ui-theme',
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
-  );
+  const [themes, setThemes] = useState<ThemeProviderState['themes']>(() => {
+    try {
+      return localStorage.getItem(storageKey)
+        ? JSON.parse(localStorage.getItem(storageKey) as string)
+        : defaultThemes;
+    } catch (error) {
+      console.error('Error parsing theme from localStorage:', error);
+      return defaultThemes;
+    }
+  });
 
   useEffect(() => {
     const root = window.document.documentElement;
 
     root.classList.remove('light', 'dark');
 
-    if (theme === 'system') {
+    if (themes.themeMode === 'system') {
       const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
         .matches
         ? 'dark'
@@ -45,14 +65,22 @@ export function ThemeProvider({
       return;
     }
 
-    root.classList.add(theme);
-  }, [theme]);
+    root.classList.add(themes.themeMode as ThemeMode);
+  }, [themes.themeMode]);
+
+  useEffect(() => {
+    changeTheme(themes.theme as keyof typeof Theme);
+  }, [themes.theme]);
 
   const value = {
-    theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
-      setTheme(theme);
+    themes,
+    setThemes: (themes: ThemeProviderState['themes']) => {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(themes));
+        setThemes(themes);
+      } catch (error) {
+        console.error('Error setting theme to localStorage:', error);
+      }
     }
   };
 

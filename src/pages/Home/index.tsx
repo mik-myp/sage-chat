@@ -37,7 +37,13 @@ function Home() {
   }, [location, isMobile, setOpenMobile]);
 
   return (
-    <ThemeProvider defaultTheme='system' storageKey='sage-chat-theme'>
+    <ThemeProvider
+      defaultThemes={{
+        theme: 'Default',
+        themeMode: 'system'
+      }}
+      storageKey='sage-chat-theme'
+    >
       <AppSidebar />
       <SidebarInset>
         <header className='flex h-13 shrink-0 items-center gap-2 border-b border-gray-200 border-solid'>

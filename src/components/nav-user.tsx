@@ -42,11 +42,12 @@ import { useTheme } from './theme-provider';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUserStore } from '../store';
+import { ThemeList } from '../lib/theme';
 
 export default function NavUser() {
   const { t, i18n } = useTranslation();
   const [language, setLanguage] = useState(i18n.language);
-  const { theme, setTheme } = useTheme();
+  const { themes, setThemes } = useTheme();
   const { logout, userInfo } = useUserStore();
 
   const user: {
@@ -65,6 +66,13 @@ export default function NavUser() {
       lang = navigator.language || 'zh-CN';
     }
     i18n.changeLanguage(lang);
+  };
+
+  const handleChangeThemes = (value: string, key: keyof typeof themes) => {
+    setThemes({
+      ...themes,
+      [key]: value
+    });
   };
 
   return (
@@ -152,9 +160,14 @@ export default function NavUser() {
               }
             />
             <Cell
-              title={t('theme')}
+              title={'主题模式'}
               description={
-                <Select value={theme} onValueChange={setTheme}>
+                <Select
+                  value={themes.themeMode}
+                  onValueChange={(value) =>
+                    handleChangeThemes(value, 'themeMode')
+                  }
+                >
                   <SelectTrigger className='w-27'>
                     <SelectValue />
                   </SelectTrigger>
@@ -162,6 +175,35 @@ export default function NavUser() {
                     <SelectItem value='light'>{t('浅色')}</SelectItem>
                     <SelectItem value='dark'>{t('深色')}</SelectItem>
                     <SelectItem value='system'>{t('跟随系统')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              }
+              isLast
+            />
+            <Cell
+              title={t('theme')}
+              description={
+                <Select
+                  value={themes.theme}
+                  onValueChange={(value) => handleChangeThemes(value, 'theme')}
+                >
+                  <SelectTrigger className='w-27'>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ThemeList.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        <div className='flex items-center'>
+                          <div
+                            className={`size-2 rounded-full`}
+                            style={{
+                              backgroundColor: item.color
+                            }}
+                          />
+                          <span className='ml-2'>{item.label}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               }
