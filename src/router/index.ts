@@ -32,6 +32,10 @@ const routes: RouteObject[] = [
         element: createElement(Groups)
       },
       {
+        path: '/chats',
+        element: createElement(Chats)
+      },
+      {
         path: '/chats/:id',
         element: createElement(Chats)
       }

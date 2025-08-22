@@ -5,7 +5,7 @@ import App from './App.tsx';
 import './i18n';
 import makeServer from './services';
 
-makeServer();
+// makeServer();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
