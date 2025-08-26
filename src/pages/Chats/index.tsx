@@ -36,9 +36,13 @@ const Chats = () => {
     setInput('');
     handleResize();
     let response: Response | undefined;
+    console.log(import.meta.env);
+
     try {
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
-      response = await fetch(`${apiBaseUrl}/v1/chat/completions`, {
+      const apiBaseUrl = import.meta.env.DEV
+        ? '/api/v1/chat/completions'
+        : '/api/chat-proxy';
+      response = await fetch(apiBaseUrl, {
         method: 'POST',
         headers: {
           Authorization: 'Bearer sk-309b4b83d4a2863f38446b817d0d761a',
