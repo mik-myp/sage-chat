@@ -37,7 +37,8 @@ const Chats = () => {
     handleResize();
     let response: Response | undefined;
     try {
-      response = await fetch('/api/v1/chat/completions', {
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+      response = await fetch(`${apiBaseUrl}/v1/chat/completions`, {
         method: 'POST',
         headers: {
           Authorization: 'Bearer sk-309b4b83d4a2863f38446b817d0d761a',
