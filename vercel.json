@@ -21,8 +21,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/$1",
-      "handle": "filesystem"
+      "dest": "/$1"
     },
     {
       "src": "/(.*)",
