@@ -32,7 +32,7 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Button } from './ui/button';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
@@ -79,8 +79,7 @@ export default function NavGroups() {
   );
   const [open, setOpen] = useState(false);
   const [actionData, setActionData] = useState<GroupInfo>({} as GroupInfo);
-  const { groups, addGroup, deleteGroup, updateGroup, fetchGroups } =
-    useGroupsStore();
+  const { groups, addGroup, deleteGroup, updateGroup } = useGroupsStore();
 
   // 根据dialogType动态决定是否需要验证
   const form = useForm<z.infer<typeof formSchema>>({
@@ -110,13 +109,7 @@ export default function NavGroups() {
 
     form.reset();
     setOpen(false);
-    fetchGroups();
   };
-
-  // 使用store中的fetchGroups方法获取分组列表
-  useEffect(() => {
-    fetchGroups();
-  }, [fetchGroups]);
 
   const handleOpenChange = useCallback(
     (open: boolean) => {

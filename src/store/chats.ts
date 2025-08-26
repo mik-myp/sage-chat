@@ -1,8 +1,16 @@
 import { createStore } from './createStore';
+import { getUUID } from '../lib/utils';
+
+export interface MessageInfo {
+  role: string;
+  content: string;
+  thinkingContent?: string;
+}
 
 export interface ChatInfo {
   name: string;
   id: string;
+  messages: MessageInfo[];
 }
 
 export interface ChatsState {
@@ -11,31 +19,52 @@ export interface ChatsState {
   // 设置聊天
   setChats: (chats: ChatInfo[]) => void;
   // 添加聊天
-  addChat: (chatInfo: ChatInfo) => void;
+  addChat: (chatName: string) => Promise<ChatInfo>;
   // 删除聊天
   deleteChat: (chatId: string) => void;
   // 更新聊天
-  updateChat: (chatInfo: ChatInfo) => void;
+  updateChat: (
+    chatId: string,
+    { chatName, messages }: { chatName: string; messages?: MessageInfo[] }
+  ) => Promise<void>;
+  // 清空聊天
+  clearChats: () => void;
 }
 
 export const useChatsStore = createStore<ChatsState>(
   (set, get) => ({
-    chats: [],
+    chats: [{ name: '默认聊天', id: getUUID(), messages: [] }],
     setChats: (chats: ChatInfo[]) => {
       set({ chats });
     },
-    addChat: (chatInfo: ChatInfo) => {
-      set({ chats: [...get().chats, chatInfo] });
+    addChat: async (chatName: string) => {
+      const newChat = { name: chatName, id: getUUID(), messages: [] };
+      set({
+        chats: [...get().chats, newChat]
+      });
+      return newChat;
     },
-    deleteChat: (chatId: string) => {
+    deleteChat: async (chatId: string) => {
       set({ chats: get().chats.filter((chat) => chat.id !== chatId) });
     },
-    updateChat: (chatInfo: ChatInfo) => {
+    updateChat: async (
+      chatId: string,
+      { chatName, messages }: { chatName: string; messages?: MessageInfo[] }
+    ) => {
       set({
         chats: get().chats.map((chat) =>
-          chat.id === chatInfo.id ? chatInfo : chat
+          chat.id === chatId
+            ? {
+                ...chat,
+                name: chatName,
+                messages: messages || chat.messages || []
+              }
+            : chat
         )
       });
+    },
+    clearChats: () => {
+      set({ chats: [] });
     }
   }),
   'chats'

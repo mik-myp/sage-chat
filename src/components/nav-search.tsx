@@ -8,11 +8,21 @@ import {
   CommandItem,
   CommandList
 } from '@/components/ui/command';
-import { chats } from '@/lib/chats';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { CHATS_BASE_URL } from '../lib/utils';
+import { useChatsStore } from '../store';
 const NavSearch = () => {
   const [open, setOpen] = useState(false);
+
+  const { chats, addChat } = useChatsStore();
+  const navigate = useNavigate();
+
+  const handleAddChat = async () => {
+    const { id } = await addChat(`新对话${chats.length + 1}`);
+    navigate(`/chats/${id}`);
+    setOpen(false);
+  };
+
   return (
     <>
       <div
@@ -27,24 +37,26 @@ const NavSearch = () => {
         <CommandList>
           <CommandEmpty>未找到结果。</CommandEmpty>
           <CommandGroup heading='操作'>
-            <NavLink to={'/'} onClick={() => setOpen(false)}>
+            <div onClick={handleAddChat}>
               <CommandItem className='cursor-pointer'>新建对话</CommandItem>
-            </NavLink>
+            </div>
           </CommandGroup>
-          <CommandGroup heading='对话'>
-            {chats.map((item) => {
-              return (
-                <NavLink
-                  to={`${CHATS_BASE_URL}/${item.id}`}
-                  onClick={() => setOpen(false)}
-                >
-                  <CommandItem key={item.id} className='cursor-pointer'>
-                    {item.name}
-                  </CommandItem>
-                </NavLink>
-              );
-            })}
-          </CommandGroup>
+          {chats.length ? (
+            <CommandGroup heading='对话'>
+              {chats.map((item) => {
+                return (
+                  <NavLink
+                    to={`${CHATS_BASE_URL}/${item.id}`}
+                    onClick={() => setOpen(false)}
+                  >
+                    <CommandItem key={item.id} className='cursor-pointer'>
+                      {item.name}
+                    </CommandItem>
+                  </NavLink>
+                );
+              })}
+            </CommandGroup>
+          ) : null}
         </CommandList>
       </CommandDialog>
     </>

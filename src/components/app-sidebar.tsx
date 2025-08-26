@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Bot } from 'lucide-react';
 
-import NavMain from '@/components/nav-main';
-import NavGroups from '@/components/nav-groups';
+// import NavMain from '@/components/nav-main';
+// import NavGroups from '@/components/nav-groups';
 import NavUser from '@/components/nav-user';
 import NavChats from '@/components/nav-chats';
 import {
@@ -25,7 +25,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size='lg' asChild>
-              <NavLink to='/chats' end>
+              <NavLink to='/' end>
                 <div className='bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg'>
                   <Bot className='size-4' />
                 </div>
@@ -40,8 +40,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavIcons />
         <NavSearch />
-        <NavMain />
-        <NavGroups />
+        {/* <NavMain /> */}
+        {/* <NavGroups /> */}
         <NavChats />
       </SidebarContent>
       <SidebarFooter>

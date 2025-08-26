@@ -3,3 +3,4 @@ export * from './createStore';
 export * from './user';
 export * from './chats';
 export * from './groups';
+export * from './global';

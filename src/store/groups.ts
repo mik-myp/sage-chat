@@ -1,5 +1,5 @@
 import { createStore } from './createStore';
-import request from '../lib/request';
+import { getUUID } from '../lib/utils';
 
 export interface GroupInfo {
   name: string;
@@ -12,59 +12,42 @@ export interface GroupsState {
   // 设置分组
   setGroups: (groups: GroupInfo[]) => void;
   // 添加分组
-  addGroup: (groupName: string) => Promise<void>;
+  addGroup: (groupName: string) => void;
   // 删除分组
-  deleteGroup: (groupId: string) => Promise<void>;
+  deleteGroup: (groupId: string) => void;
   // 更新分组
-  updateGroup: (groupId: string, groupName: string) => Promise<void>;
-  // 获取分组列表
-  fetchGroups: () => Promise<void>;
+  updateGroup: (groupId: string, groupName: string) => void;
 }
 
 export const useGroupsStore = createStore<GroupsState>(
   (set, get) => ({
-    groups: [],
+    groups: [{ name: '默认分组', id: getUUID() }],
     setGroups: (groups: GroupInfo[]) => {
       set({ groups });
     },
     // 添加分组
     addGroup: async (groupName: string) => {
-      const res = await request<{ data: GroupInfo }>('/addGroup', {
-        method: 'POST',
-        data: { groupName }
+      set({
+        groups: [
+          ...get().groups,
+          {
+            name: groupName,
+            id: getUUID()
+          }
+        ]
       });
-
-      if (res.data && 'name' in res.data && 'id' in res.data) {
-        set({ groups: [...get().groups, res.data as GroupInfo] });
-      }
     },
     // 删除分组
     deleteGroup: async (groupId: string) => {
-      await request(`/groups/${groupId}`, {
-        method: 'DELETE'
-      });
-
       set({ groups: get().groups.filter((group) => group.id !== groupId) });
     },
     // 更新分组
     updateGroup: async (groupId: string, groupName: string) => {
-      const res = await request<{ data: GroupInfo }>('/editGroup', {
-        method: 'POST',
-        data: { id: groupId, groupName }
+      set({
+        groups: get().groups.map((group) =>
+          group.id === groupId ? { ...group, name: groupName } : group
+        )
       });
-
-      if (res.data && 'name' in res.data && 'id' in res.data) {
-        set({
-          groups: get().groups.map((group) =>
-            group.id === groupId ? (res.data as unknown as GroupInfo) : group
-          )
-        });
-      }
-    },
-    // 获取分组列表
-    fetchGroups: async () => {
-      const res = await request<{ groups: GroupInfo[] }>('/groups');
-      set({ groups: res.groups });
     }
   }),
   'groups'

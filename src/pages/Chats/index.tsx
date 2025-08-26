@@ -3,15 +3,19 @@ import { useParams } from 'react-router-dom';
 
 import Bubble from './components/Bubble';
 import { CircleArrowUp, UserRound } from 'lucide-react';
+import { useChatsStore, useGlobalStore } from '../../store';
 
 const Chats = () => {
   const { id } = useParams();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { aiModel } = useGlobalStore();
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<
     { role: string; content: string; thinkingContent?: string }[]
   >([]);
+  const { chats, updateChat } = useChatsStore();
+  const [isStreaming, setIsStreaming] = useState(false);
 
   const handleResize = () => {
     if (textareaRef.current) {
@@ -25,8 +29,9 @@ const Chats = () => {
   }, []);
 
   const handleSubmit = async () => {
+    if (!input || isStreaming) return;
     // 提交逻辑待实现
-    console.log('提交消息', messages);
+    setIsStreaming(true);
     setMessages((prev) => [...prev, { role: 'user', content: input }]);
     setInput('');
     handleResize();
@@ -39,7 +44,7 @@ const Chats = () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'DeepSeek-R1',
+          model: aiModel,
           messages: [...messages, { role: 'user', content: input }],
           stream: true
         })
@@ -129,78 +134,78 @@ const Chats = () => {
         ...prev,
         { role: 'system', content: `Error: ${errorText.substring(0, 100)}` }
       ]);
+    } finally {
+      setIsStreaming(false);
     }
   };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (id) {
+      updateChat(id, {
+        chatName: chats.find((item) => item.id === id)?.name as string,
+        messages
+      });
+    }
   }, [messages]);
 
-  if (!id) {
-    // 新对话的处理逻辑
-    return (
-      <div className='flex flex-col h-full '>
-        <div className='flex-1 h-full overflow-auto '>
-          <div className='px-6 py-3 gap-4 flex flex-col'>
-            {messages.map((item, index) => (
-              <Bubble
-                key={index}
-                avatar={{
-                  icon: <UserRound size={32} />,
-                  style:
-                    item.role === 'system'
-                      ? { color: '#f56a00', backgroundColor: '#fde3cf' }
-                      : { color: '#fff', backgroundColor: '#87d068' }
-                }}
-                content={item.content}
-                placement={item.role === 'system' ? 'left' : 'right'}
-                thinkingContent={
-                  item.role === 'system' ? item.thinkingContent : undefined
-                }
-              />
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-        </div>
-        <div className='flex items-center m-4'>
-          <div className='border rounded-lg w-full px-4 py-2 flex flex-row items-center justify-between gap-2'>
-            <textarea
-              ref={textareaRef}
-              className='focus:outline-none w-full'
-              placeholder='请输入消息'
-              onChange={(e) => {
-                setInput(e.target.value);
-                handleResize();
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSubmit();
-                }
-              }}
-              value={input}
-              style={{ minHeight: '2rem', maxHeight: '12rem', resize: 'none' }}
-            />
-            <CircleArrowUp
-              onClick={handleSubmit}
-              className='self-end text-primary w-8 h-8 cursor-pointer hover:text-primary/80'
-              size={32}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (id) {
+      setMessages(chats.find((item) => item.id === id)?.messages || []);
+    }
+  }, [id]);
 
+  // 新对话的处理逻辑
   return (
-    <div className='flex flex-col h-full p-6'>
-      <div className='text-2xl font-bold mb-4'>对话: {id}</div>
-      <div className='flex-1 bg-muted rounded-lg p-4 overflow-auto space-y-4'>
-        <div className='text-center text-muted-foreground'>
-          对话内容将显示在这里
+    <div className='flex flex-col h-full '>
+      <div className='flex-1 h-full overflow-auto '>
+        <div className='px-6 py-3 gap-4 flex flex-col'>
+          {messages.map((item, index) => (
+            <Bubble
+              key={index}
+              avatar={{
+                icon: <UserRound size={32} />,
+                style:
+                  item.role === 'system'
+                    ? { color: '#f56a00', backgroundColor: '#fde3cf' }
+                    : { color: '#fff', backgroundColor: '#87d068' }
+              }}
+              content={item.content}
+              placement={item.role === 'system' ? 'left' : 'right'}
+              thinkingContent={
+                item.role === 'system' ? item.thinkingContent : undefined
+              }
+            />
+          ))}
+          <div ref={messagesEndRef} />
         </div>
       </div>
-      <div className='my-auto mt-4'>{/* 这里可以添加消息输入框 */}</div>
+      <div className='flex items-center m-4'>
+        <div className='border rounded-lg w-full px-4 py-2 flex flex-row items-center justify-between gap-2'>
+          <textarea
+            ref={textareaRef}
+            className='focus:outline-none w-full'
+            placeholder='请输入消息'
+            onChange={(e) => {
+              setInput(e.target.value);
+              handleResize();
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit();
+              }
+            }}
+            value={input}
+            style={{ minHeight: '2rem', maxHeight: '12rem', resize: 'none' }}
+          />
+          <CircleArrowUp
+            onClick={handleSubmit}
+            className='self-end text-primary w-8 h-8 cursor-pointer hover:text-primary/80'
+            size={32}
+          />
+        </div>
+      </div>
     </div>
   );
 };

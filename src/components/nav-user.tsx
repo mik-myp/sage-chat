@@ -34,21 +34,35 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { formatPhone } from '@/lib/utils';
-
-import { Switch } from '@/components/ui/switch';
 import { useTheme } from './theme-provider';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUserStore } from '../store';
+import { useChatsStore, useGlobalStore, useUserStore } from '../store';
 import { ThemeList } from '../lib/theme';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/alert-dialog';
+import { AI_MODEL_LIST } from '../lib/aiModel';
+import { useNavigate } from 'react-router-dom';
 
 export default function NavUser() {
   const { t, i18n } = useTranslation();
   const [language, setLanguage] = useState(i18n.language);
   const { themes, setThemes } = useTheme();
   const { logout, userInfo } = useUserStore();
+  const { aiModel, setAiModel } = useGlobalStore();
+  const navigate = useNavigate();
+  const { clearChats } = useChatsStore();
+  const [open, setOpen] = useState(false);
 
   const user: {
     username: string;
@@ -75,35 +89,23 @@ export default function NavUser() {
     });
   };
 
+  const handleDeleteAllChats = () => {
+    clearChats();
+    setOpen(false);
+    navigate('/');
+  };
+
   return (
-    <Dialog>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <SidebarMenuButton
-                size='lg'
-                className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
-              >
-                <Avatar className='h-8 w-8 rounded-lg'>
-                  <AvatarImage src={user.avatar} alt={user.username} />
-                  <AvatarFallback className='rounded-lg'>CN</AvatarFallback>
-                </Avatar>
-                <div className='grid flex-1 text-left text-sm leading-tight'>
-                  <span className='truncate font-medium'>{user.username}</span>
-                  <span className='truncate text-xs'>{user.email}</span>
-                </div>
-                <ChevronsUpDown className='ml-auto size-4' />
-              </SidebarMenuButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className='w-(--radix-dropdown-menu-trigger-width) min-w-48 rounded-lg'
-              side={'top'}
-              align='end'
-              sideOffset={4}
-            >
-              <DropdownMenuLabel className='p-0 font-normal'>
-                <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <AlertDialog>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  size='lg'
+                  className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
+                >
                   <Avatar className='h-8 w-8 rounded-lg'>
                     <AvatarImage src={user.avatar} alt={user.username} />
                     <AvatarFallback className='rounded-lg'>CN</AvatarFallback>
@@ -114,148 +116,194 @@ export default function NavUser() {
                     </span>
                     <span className='truncate text-xs'>{user.email}</span>
                   </div>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DialogTrigger asChild>
-                  <DropdownMenuItem>
-                    <Settings />
-                    {t('systemSetting')}
+                  <ChevronsUpDown className='ml-auto size-4' />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className='w-(--radix-dropdown-menu-trigger-width) min-w-48 rounded-lg'
+                side={'top'}
+                align='end'
+                sideOffset={4}
+              >
+                <DropdownMenuLabel className='p-0 font-normal'>
+                  <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
+                    <Avatar className='h-8 w-8 rounded-lg'>
+                      <AvatarImage src={user.avatar} alt={user.username} />
+                      <AvatarFallback className='rounded-lg'>CN</AvatarFallback>
+                    </Avatar>
+                    <div className='grid flex-1 text-left text-sm leading-tight'>
+                      <span className='truncate font-medium'>
+                        {user.username}
+                      </span>
+                      <span className='truncate text-xs'>{user.email}</span>
+                    </div>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DialogTrigger asChild>
+                    <DropdownMenuItem>
+                      <Settings />
+                      {t('systemSetting')}
+                    </DropdownMenuItem>
+                  </DialogTrigger>
+                  <DropdownMenuItem onClick={logout}>
+                    <LogOut />
+                    {t('logout')}
                   </DropdownMenuItem>
-                </DialogTrigger>
-                <DropdownMenuItem onClick={logout}>
-                  <LogOut />
-                  {t('logout')}
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </SidebarMenuItem>
-      </SidebarMenu>
-      <DialogContent className='sm:max-w-xl'>
-        <DialogHeader>
-          <DialogTitle>{t('systemSetting')}</DialogTitle>
-        </DialogHeader>
-        <Tabs defaultValue='setting'>
-          <TabsList className='w-full'>
-            <TabsTrigger value='setting'>{t('generalSetting')}</TabsTrigger>
-            <TabsTrigger value='account'>{t('accountManagement')}</TabsTrigger>
-            <TabsTrigger value='agreement'>{t('serviceAgreement')}</TabsTrigger>
-          </TabsList>
-          <TabsContent value='setting'>
-            <Cell
-              title={t('language')}
-              description={
-                <Select value={language} onValueChange={handleLanguageChange}>
-                  <SelectTrigger className='w-27'>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='en-US'>English</SelectItem>
-                    <SelectItem value='zh-CN'>中文</SelectItem>
-                    <SelectItem value='system'>跟随系统</SelectItem>
-                  </SelectContent>
-                </Select>
-              }
-            />
-            <Cell
-              title={'主题模式'}
-              description={
-                <Select
-                  value={themes.themeMode}
-                  onValueChange={(value) =>
-                    handleChangeThemes(value, 'themeMode')
-                  }
-                >
-                  <SelectTrigger className='w-27'>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='light'>{t('浅色')}</SelectItem>
-                    <SelectItem value='dark'>{t('深色')}</SelectItem>
-                    <SelectItem value='system'>{t('跟随系统')}</SelectItem>
-                  </SelectContent>
-                </Select>
-              }
-              isLast
-            />
-            <Cell
-              title={t('theme')}
-              description={
-                <Select
-                  value={themes.theme}
-                  onValueChange={(value) => handleChangeThemes(value, 'theme')}
-                >
-                  <SelectTrigger className='w-27'>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ThemeList.map((item) => (
-                      <SelectItem key={item.value} value={item.value}>
-                        <div className='flex items-center'>
-                          <div
-                            className={`size-2 rounded-full`}
-                            style={{
-                              backgroundColor: item.color
-                            }}
-                          />
-                          <span className='ml-2'>{item.label}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              }
-              isLast
-            />
-          </TabsContent>
-          <TabsContent value='account'>
-            <Cell
-              title={t('phoneNumber')}
-              description={formatPhone('17671812132')}
-            />
-            <Cell
-              title={t('dataUsage')}
-              subTitle={t('dataUsageDescription')}
-              description={<Switch />}
-            />
-            <Cell
-              title={t('exportHistory')}
-              subTitle={t('exportHistoryDescription')}
-              description={<Button variant='outline'>{t('export')}</Button>}
-            />
-            <Cell
-              title={t('logoutAllDevices')}
-              description={
-                <Button variant='outline'>{t('logoutAction')}</Button>
-              }
-            />
-            <Cell
-              title={t('deleteAllChats')}
-              description={<Button variant='destructive'>{t('delete')}</Button>}
-            />
-            <Cell
-              title={t('deleteAccount')}
-              isLast
-              description={
-                <Button variant='destructive'>{t('cancelAccount')}</Button>
-              }
-            />
-          </TabsContent>
-          <TabsContent value='agreement'>
-            <Cell
-              title={t('userAgreement')}
-              description={<Button variant='outline'>{t('view')}</Button>}
-            />
-            <Cell
-              title={t('privacyPolicy')}
-              isLast
-              description={<Button variant='outline'>{t('view')}</Button>}
-            />
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+        <DialogContent className='sm:max-w-xl'>
+          <DialogHeader>
+            <DialogTitle>{t('systemSetting')}</DialogTitle>
+          </DialogHeader>
+          <Tabs defaultValue='setting'>
+            <TabsList className='w-full'>
+              <TabsTrigger value='setting'>{t('generalSetting')}</TabsTrigger>
+              <TabsTrigger value='account'>
+                {t('accountManagement')}
+              </TabsTrigger>
+              <TabsTrigger value='agreement'>
+                {t('serviceAgreement')}
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value='setting'>
+              <Cell
+                title={t('language')}
+                description={
+                  <Select value={language} onValueChange={handleLanguageChange}>
+                    <SelectTrigger className='w-27'>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='en-US'>English</SelectItem>
+                      <SelectItem value='zh-CN'>中文</SelectItem>
+                      <SelectItem value='system'>跟随系统</SelectItem>
+                    </SelectContent>
+                  </Select>
+                }
+              />
+              <Cell
+                title={'主题模式'}
+                description={
+                  <Select
+                    value={themes.themeMode}
+                    onValueChange={(value) =>
+                      handleChangeThemes(value, 'themeMode')
+                    }
+                  >
+                    <SelectTrigger className='w-27'>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='light'>{t('浅色')}</SelectItem>
+                      <SelectItem value='dark'>{t('深色')}</SelectItem>
+                      <SelectItem value='system'>{t('跟随系统')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                }
+              />
+              <Cell
+                title={t('theme')}
+                description={
+                  <Select
+                    value={themes.theme}
+                    onValueChange={(value) =>
+                      handleChangeThemes(value, 'theme')
+                    }
+                  >
+                    <SelectTrigger className='w-27'>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ThemeList.map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          <div className='flex items-center'>
+                            <div
+                              className={`size-2 rounded-full`}
+                              style={{
+                                backgroundColor: item.color
+                              }}
+                            />
+                            <span className='ml-2'>{item.label}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                }
+                isLast
+              />
+            </TabsContent>
+            <TabsContent value='account'>
+              <Cell title={'用户名'} description={user.username} />
+              <Cell title={'邮箱'} description={user.email} />
+              <Cell
+                title={'AI 模型'}
+                subTitle={
+                  '注意：切换模型后，建议再手动删除所有对话，以避免模型不兼容问题'
+                }
+                description={
+                  <Select
+                    value={aiModel}
+                    onValueChange={(value) => setAiModel(value)}
+                  >
+                    <SelectTrigger className='w-27'>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {AI_MODEL_LIST.map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                }
+                isLast
+              />
+              <Cell
+                title={t('deleteAllChats')}
+                description={
+                  <AlertDialogTrigger asChild>
+                    <Button variant='destructive'>{t('delete')}</Button>
+                  </AlertDialogTrigger>
+                }
+                isLast
+              />
+            </TabsContent>
+            <TabsContent value='agreement'>
+              <Cell
+                title={t('userAgreement')}
+                description={<Button variant='outline'>{t('view')}</Button>}
+              />
+              <Cell
+                title={t('privacyPolicy')}
+                isLast
+                description={<Button variant='outline'>{t('view')}</Button>}
+              />
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确定删除所有对话吗？</AlertDialogTitle>
+            <AlertDialogDescription>
+              这将永久删除所有对话，无法恢复。是否继续？
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteAllChats}>
+              继续
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }
