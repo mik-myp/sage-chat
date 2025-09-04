@@ -55,7 +55,7 @@ const Bubble = (props: IProps) => {
         {avatar?.icon}
       </div>
       <div className='flex flex-col'>
-        <div className='rounded-xl py-3 px-4 bg-gray-200 text-sm'>
+        <div className='rounded-xl py-3 px-4 bg-gray-200 dark:bg-gray-700 dark:text-white text-sm'>
           {thinkingContent && (
             <details
               className='my-2 text-xs text-muted-foreground animate-fadeIn'
