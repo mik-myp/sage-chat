@@ -23,7 +23,7 @@ export interface ApiInstance extends AxiosInstance {
 
 // 创建 axios 实例
 const request: ApiInstance = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
   timeout: 60000,
   headers: {
     'Content-Type': 'application/json'
@@ -174,7 +174,7 @@ export const streamRequest = async <T>(
 
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL || '/api'}${url}`,
+      `${import.meta.env.VITE_API_BASE_URL || 'https://sage-chat-eight.vercel.app/api'}${url}`,
       {
         method: 'POST',
         headers: {

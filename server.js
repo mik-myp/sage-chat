@@ -12,7 +12,5 @@ app.use(express.json());
 // API路由
 app.post('/api/chat/completions', chatCompletionHandler);
 
-// 启动服务器
-app.listen(PORT, () => {
-  console.log(`Backend server running on http://localhost:${PORT}`);
-});
+// 导出Express应用供Vercel Serverless使用
+module.exports = app;
