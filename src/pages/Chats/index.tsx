@@ -37,22 +37,22 @@ const Chats = () => {
     handleResize();
     let response: Response | undefined;
 
+    const apiBaseUrl = import.meta.env.DEV
+      ? '/api/chat/completions'
+      : 'http://120.26.21.10/api/chat/completions';
     try {
-      response = await fetch(
-        'https://sage-chat-eight.vercel.app/api/chat/completions',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: 'Bearer sk-309b4b83d4a2863f38446b817d0d761a',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            model: aiModel,
-            messages: [...messages, { role: 'user', content: input }],
-            stream: true
-          })
-        }
-      );
+      response = await fetch(apiBaseUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer sk-309b4b83d4a2863f38446b817d0d761a',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: aiModel,
+          messages: [...messages, { role: 'user', content: input }],
+          stream: true
+        })
+      });
       if (!response || !response.ok || !response.body) {
         throw new Error(`HTTP error! status: ${response?.status || 'unknown'}`);
       }
